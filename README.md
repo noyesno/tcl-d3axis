@@ -5,7 +5,7 @@ Usage
 -----
 
 ``` tcl
-d3axis::rotate [list $x $y $z] X 45 Y 90 Z45
+d3axis::rotate [list $x $y $z] X 45 Y 90 Z 45
 ```
 
 ``` tcl

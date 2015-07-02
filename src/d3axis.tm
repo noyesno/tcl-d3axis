@@ -4,26 +4,42 @@ package provide d3axis 0.1
 namespace eval d3axis {
   set PI [expr {atan(1) * 4}]
 
+  set RZ {
+    { [expr { $cos}] [expr {-$sin}] 0 }
+    { [expr { $sin}] [expr {+$cos}] 0 }
+    { 0            0            1 }
+  }
+
   set RX {
     { 1  0              0               }
-    { 0  [expr cos($r)] [expr -sin($r)] }
-    { 0  [expr sin($r)] [expr +cos($r)] }
+    { 0  [expr {$cos}] [expr {-$sin}] }
+    { 0  [expr {$sin}] [expr {+$cos}] }
   }
   
   set RY {
-    { [expr  cos($r)] 0  [expr +sin($r)] }
+    { [expr { $cos}] 0  [expr {+$sin}] }
     { 0               1  0 }
-    { [expr -sin($r)] 0  [expr +cos($r)] }
+    { [expr {-$sin}] 0  [expr {+$cos}] }
   }
   
-  set RZ {
-    { [expr  cos($r)] [expr -sin($r)] 0 }
-    { [expr  sin($r)] [expr +cos($r)] 0 }
-    { 0               0               1 }
+
+  
+
+  proc MR {M angle} {
+    variable PI
+
+    if {[llength $angle]==1} {
+      set r  [expr {$PI*$angle/180}]
+      set sin [expr {sin($r)}]
+      set cos [expr {cos($r)}]
+    } else {
+      lassign $angle sin cos
+    }
+
+    return [subst $M]
   }
 
   proc rotate {vector args} {
-    variable PI
     variable RX
     variable RY
     variable RZ
@@ -34,20 +50,17 @@ namespace eval d3axis {
       switch $axis {
         x -
         X {
-          set r      [expr {$PI*$angle/180}]
-          set MRX    [subst $RX]
+          set MRX    [MR $RX $angle]
           set result [matrix::mul $MRX $result]
 	}
 	y -
 	Y {
-          set r   [expr {$PI*$angle/180}]
-          set MRY [subst $RY]
+          set MRY    [MR $RY $angle]
           set result [matrix::mul $MRY $result]
 	}
 	z -
 	Z {
-          set r   [expr {$PI*$angle/180}]
-          set MRZ [subst $RZ]
+          set MRZ    [MR $RZ $angle]
           set result [matrix::mul $MRZ $result]
 	}
       }
@@ -57,3 +70,13 @@ namespace eval d3axis {
   }
 
 }
+
+return
+
+ 
+ # rotate x angle r
+
+ sin(r) = $y/sqrt($y*$y + $z*$z)
+ cos(r) = $z/sqrt($y*$y + $z*$z)
+
+
